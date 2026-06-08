@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronRight, FolderPlus, Trash2, X } from 'lucide-react';
+import { ChevronRight, FolderPlus, Plus, Trash2, X } from 'lucide-react';
 import { useProjectStore } from '../store/useProjectStore';
 
 export default function Dashboard() {
@@ -53,10 +53,10 @@ export default function Dashboard() {
         </h1>
         <button
           onClick={() => setShowForm((v) => !v)}
-          className="flex items-center gap-1 rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink transition-transform active:scale-95"
+          aria-label="Add project"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-ink transition-transform active:scale-95"
         >
-          <FolderPlus size={16} strokeWidth={2.4} />
-          Add
+          <Plus size={20} strokeWidth={2.4} />
         </button>
       </header>
 
