@@ -12,12 +12,13 @@ import { useProjectStore } from '../store/useProjectStore';
 import { TASK_TYPES, type Task, type TaskType } from '../types';
 
 type Filter = 'All' | TaskType;
-const FILTERS: Filter[] = ['All', 'Idea', 'Feature', 'Change'];
+const FILTERS: Filter[] = ['All', 'Idea', 'Feature', 'Change', 'Bug'];
 
 const TYPE_STYLES: Record<TaskType, string> = {
   Idea: 'bg-amber-400/15 text-amber-300',
   Feature: 'bg-sky-400/15 text-sky-300',
   Change: 'bg-violet-400/15 text-violet-300',
+  Bug: 'bg-rose-400/15 text-rose-300',
 };
 
 export default function ProjectDetail() {
