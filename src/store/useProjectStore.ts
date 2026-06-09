@@ -27,7 +27,6 @@ interface ProjectState {
   toggleTask: (taskId: string) => void;
   editTask: (taskId: string, updates: { title?: string; type?: TaskType }) => void;
   deleteTask: (taskId: string) => void;
-  /** Persist a new manual order for the given visible task ids within a project. */
   reorderTasks: (projectId: string, orderedIds: string[]) => void;
 
   getProject: (projectId: string) => Project | undefined;
@@ -37,7 +36,6 @@ interface ProjectState {
 export const useProjectStore = create<ProjectState>()(
   persist(
     (set, get) => {
-      /** Bump a project's updatedAt to the given timestamp. */
       const touchProject = (projects: Project[], projectId: string, now: number) =>
         projects.map((p) =>
           p.id === projectId ? { ...p, updatedAt: now } : p
@@ -187,8 +185,6 @@ export const useProjectStore = create<ProjectState>()(
 
         reorderTasks: (projectId, orderedIds) =>
           set((s) => {
-            // Reassign only the order "slots" the moved tasks already occupied,
-            // so tasks hidden by a filter keep their relative positions.
             const slots = orderedIds
               .map((id) => s.tasks.find((t) => t.id === id)?.order)
               .filter((o): o is number => o !== undefined)
@@ -229,8 +225,6 @@ export const useProjectStore = create<ProjectState>()(
             updatedAt: p.updatedAt ?? p.createdAt,
             completed: p.completed ?? false,
           }));
-          // Backfill manual order per project, preserving the existing
-          // newest-first array order (index 0 = top).
           const seen: Record<string, number> = {};
           const tasks = (state.tasks ?? []).map((t) => {
             const idx = seen[t.projectId] ?? 0;
