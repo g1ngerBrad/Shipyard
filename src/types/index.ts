@@ -20,7 +20,6 @@ export interface Task {
   completed: boolean;
   createdAt: number;
   completedAt?: number;
-  /** Manual sort position within a project (ascending = top). */
   order: number;
 }
 
