@@ -1,4 +1,10 @@
-import { useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import {
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type HTMLAttributes,
+} from 'react';
 import { useNavigate, useParams, Navigate } from 'react-router-dom';
 import {
   Check,
@@ -15,7 +21,8 @@ import {
 } from 'lucide-react';
 import {
   DndContext,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   closestCenter,
   useSensor,
   useSensors,
@@ -58,10 +65,14 @@ export default function ProjectDetail() {
   const toggleProjectComplete = useProjectStore((s) => s.toggleProjectComplete);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
+    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 180, tolerance: 8 },
+    })
   );
 
   const [title, setTitle] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
   const [newType, setNewType] = useState<TaskType>('Feature');
   const [filters, setFilters] = useState<TaskType[]>([]);
 
@@ -106,6 +117,13 @@ export default function ProjectDetail() {
     if (!trimmed) return;
     addTask(id, newType, trimmed);
     setTitle('');
+    // On WebKit (iOS/macOS) the inline autocorrect suggestion lives in a
+    // separate "marked text" layer. Clearing the value while the input keeps
+    // focus leaves that grey candidate stranded over the placeholder, so blur
+    // to discard it, then refocus next frame to keep rapid entry working.
+    const input = inputRef.current;
+    input?.blur();
+    requestAnimationFrame(() => input?.focus());
   };
 
   const startEditProject = () => {
@@ -252,6 +270,7 @@ export default function ProjectDetail() {
         </div>
         <div className="flex gap-2">
           <input
+            ref={inputRef}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && submit()}
@@ -280,7 +299,7 @@ export default function ProjectDetail() {
               filters.includes(f) ? TYPE_STYLES[f] : 'bg-ink-soft text-slate-400'
             }`}
           >
-            {`${f}s`}
+            {f}
           </button>
         ))}
       </div>
@@ -371,16 +390,10 @@ function SortableTaskRow(props: {
     transition,
   };
 
-  const dragHandle = (
-    <button
-      {...attributes}
-      {...listeners}
-      aria-label="Drag to reorder"
-      className="-ml-1 shrink-0 cursor-grab touch-none text-slate-600 active:cursor-grabbing active:scale-90"
-    >
-      <GripVertical size={16} />
-    </button>
-  );
+  const dragProps = {
+    ...attributes,
+    ...listeners,
+  } as HTMLAttributes<HTMLLIElement>;
 
   return (
     <TaskRow
@@ -388,7 +401,7 @@ function SortableTaskRow(props: {
       innerRef={setNodeRef}
       style={style}
       isDragging={isDragging}
-      dragHandle={dragHandle}
+      dragProps={dragProps}
     />
   );
 }
@@ -401,7 +414,7 @@ function TaskRow({
   innerRef,
   style,
   isDragging,
-  dragHandle,
+  dragProps,
 }: {
   task: Task;
   onToggle: () => void;
@@ -410,7 +423,7 @@ function TaskRow({
   innerRef?: (node: HTMLElement | null) => void;
   style?: CSSProperties;
   isDragging?: boolean;
-  dragHandle?: ReactNode;
+  dragProps?: HTMLAttributes<HTMLLIElement>;
 }) {
   const [editing, setEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(task.title);
@@ -489,11 +502,22 @@ function TaskRow({
     <li
       ref={innerRef}
       style={style}
+      {...dragProps}
       className={`flex items-center gap-2.5 rounded-xl border border-ink-line bg-ink-soft px-3 py-2.5 ${
-        isDragging ? 'relative z-10 opacity-80 shadow-lg shadow-black/40' : ''
+        dragProps ? 'cursor-grab active:cursor-grabbing' : ''
+      } ${
+        isDragging
+          ? 'relative z-10 cursor-grabbing opacity-80 shadow-lg shadow-black/40'
+          : ''
       }`}
     >
-      {dragHandle}
+      {dragProps && (
+        <GripVertical
+          size={16}
+          className="-ml-1 shrink-0 text-slate-600"
+          aria-hidden
+        />
+      )}
       <button
         onMouseDown={(e) => e.preventDefault()}
         onClick={onToggle}
