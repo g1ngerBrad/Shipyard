@@ -11,10 +11,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: { enabled: false },
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.svg', 'favicon-96x96.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Project Tracker',
-        short_name: 'Tracker',
+        name: 'TrackLight',
+        short_name: 'TrackLight',
         description: 'Track projects, ideas, features and changes — offline.',
         theme_color: '#0f172a',
         background_color: '#0f172a',

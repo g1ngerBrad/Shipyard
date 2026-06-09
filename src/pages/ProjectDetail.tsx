@@ -103,6 +103,7 @@ export default function ProjectDetail() {
           {TASK_TYPES.map((t) => (
             <button
               key={t}
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setNewType(t)}
               className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-transform active:scale-95 ${
                 newType === t ? TYPE_STYLES[t] : 'bg-ink text-slate-400'
@@ -121,6 +122,7 @@ export default function ProjectDetail() {
             className="min-w-0 flex-1 rounded-lg border border-ink-line bg-ink px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none"
           />
           <button
+            onMouseDown={(e) => e.preventDefault()}
             onClick={submit}
             disabled={!title.trim()}
             aria-label="Add task"
@@ -135,6 +137,7 @@ export default function ProjectDetail() {
         {FILTERS.map((f) => (
           <button
             key={f}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => setFilter(f)}
             className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-transform active:scale-95 ${
               filter === f ? 'bg-slate-100 text-ink' : 'bg-ink-soft text-slate-400'
@@ -165,6 +168,7 @@ export default function ProjectDetail() {
       {done.length > 0 && (
         <div className="mt-5">
           <button
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => setShowDone((v) => !v)}
             className="flex w-full items-center justify-between rounded-lg bg-ink-soft px-3 py-2 text-sm text-slate-300 active:scale-[0.99]"
           >
@@ -204,14 +208,15 @@ function TaskRow({
   return (
     <li className="flex items-center gap-2.5 rounded-xl border border-ink-line bg-ink-soft px-3 py-2.5">
       <button
+        onMouseDown={(e) => e.preventDefault()}
         onClick={onToggle}
         aria-label={task.completed ? 'Mark as open' : 'Mark as done'}
-        className="shrink-0 active:scale-90"
+        className="-m-1.5 shrink-0 p-1.5 active:scale-90"
       >
         {task.completed ? (
-          <CheckCircle2 size={20} className="text-accent" />
+          <CheckCircle2 size={28} className="text-accent" />
         ) : (
-          <Circle size={20} className="text-slate-500" />
+          <Circle size={28} className="text-slate-500" />
         )}
       </button>
 
@@ -234,6 +239,7 @@ function TaskRow({
       </span>
 
       <button
+        onMouseDown={(e) => e.preventDefault()}
         onClick={onDelete}
         aria-label="Delete task"
         className="shrink-0 text-slate-600 active:scale-90"

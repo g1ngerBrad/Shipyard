@@ -17,7 +17,6 @@ export default function Dashboard() {
   const [desc, setDesc] = useState('');
   const nameRef = useRef<HTMLInputElement>(null);
 
-  // The "+" in the bottom nav routes here with ?new=1.
   useEffect(() => {
     if (params.get('new') === '1') {
       setShowForm(true);
