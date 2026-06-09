@@ -5,8 +5,8 @@ import ProjectDetail from './pages/ProjectDetail';
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-ink">
-        <main className="flex-1 px-4 pt-12 pb-8">
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col">
+        <main className="flex-1 px-4 pt-8 pb-8">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/project/:id" element={<ProjectDetail />} />
