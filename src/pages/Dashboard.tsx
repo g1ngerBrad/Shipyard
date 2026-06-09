@@ -13,7 +13,12 @@ import {
   X,
 } from 'lucide-react';
 import { useProjectStore } from '../store/useProjectStore';
-import { PROJECT_SORTS, type ProjectSort } from '../types';
+import {
+  PROJECT_SORTS,
+  TECH_STACK_FIELDS,
+  type ProjectSort,
+  type TechStack,
+} from '../types';
 import ConfirmDialog from '../components/ConfirmDialog';
 import SortMenu from '../components/SortMenu';
 
@@ -33,6 +38,7 @@ export default function Dashboard() {
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
+  const [techStack, setTechStack] = useState<TechStack>({});
   const [pendingDelete, setPendingDelete] = useState<{
     id: string;
     name: string;
@@ -92,9 +98,10 @@ export default function Dashboard() {
   const submit = () => {
     const trimmed = name.trim();
     if (!trimmed) return;
-    const id = addProject(trimmed, desc);
+    const id = addProject(trimmed, desc, techStack);
     setName('');
     setDesc('');
+    setTechStack({});
     setShowForm(false);
     navigate(`/project/${id}`);
   };
@@ -152,6 +159,23 @@ export default function Dashboard() {
             placeholder="Description (optional)"
             className="mb-3 w-full rounded-lg border border-ink-line bg-ink px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none"
           />
+          <p className="mb-1.5 text-xs font-medium text-slate-400">
+            Tech stack (optional)
+          </p>
+          <div className="mb-3 flex flex-col gap-2">
+            {TECH_STACK_FIELDS.map((f) => (
+              <input
+                key={f.key}
+                value={techStack[f.key] ?? ''}
+                onChange={(e) =>
+                  setTechStack((s) => ({ ...s, [f.key]: e.target.value }))
+                }
+                onKeyDown={(e) => e.key === 'Enter' && submit()}
+                placeholder={f.label}
+                className="w-full rounded-lg border border-ink-line bg-ink px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none"
+              />
+            ))}
+          </div>
           <button
             onClick={submit}
             disabled={!name.trim()}

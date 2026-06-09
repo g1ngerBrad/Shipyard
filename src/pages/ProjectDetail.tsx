@@ -36,7 +36,13 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useProjectStore } from '../store/useProjectStore';
-import { TASK_TYPES, type Task, type TaskType } from '../types';
+import {
+  TASK_TYPES,
+  TECH_STACK_FIELDS,
+  type Task,
+  type TaskType,
+  type TechStack,
+} from '../types';
 import ConfirmDialog from '../components/ConfirmDialog';
 
 const FILTERS: TaskType[] = ['Idea', 'Feature', 'Change', 'Bug', 'Tweak'];
@@ -85,6 +91,7 @@ export default function ProjectDetail() {
   const [editingProject, setEditingProject] = useState(false);
   const [draftName, setDraftName] = useState('');
   const [draftDesc, setDraftDesc] = useState('');
+  const [draftTechStack, setDraftTechStack] = useState<TechStack>({});
 
   const projectTasks = useMemo(
     () => tasks.filter((t) => t.projectId === id),
@@ -125,14 +132,26 @@ export default function ProjectDetail() {
   const startEditProject = () => {
     setDraftName(project.name);
     setDraftDesc(project.description ?? '');
+    setDraftTechStack(project.techStack ?? {});
     setEditingProject(true);
   };
 
   const saveProject = () => {
     if (!draftName.trim()) return;
-    editProject(id, { name: draftName, description: draftDesc });
+    editProject(id, {
+      name: draftName,
+      description: draftDesc,
+      techStack: draftTechStack,
+    });
     setEditingProject(false);
   };
+
+  const techEntries = project.techStack
+    ? TECH_STACK_FIELDS.map((f) => ({
+        label: f.label,
+        value: (project.techStack?.[f.key] ?? '').trim(),
+      })).filter((e) => e.value)
+    : [];
 
   const handleDragEnd = (e: DragEndEvent) => {
     const { active: dragged, over } = e;
@@ -169,6 +188,31 @@ export default function ProjectDetail() {
             <p className="text-xs text-slate-400">
               {project.description}
             </p>
+          )}
+          {techEntries.length > 0 && (
+            <div className="mt-1.5 flex flex-col gap-1">
+              {techEntries.map((entry) => (
+                <div key={entry.label} className="flex items-center gap-1.5">
+                  <span className="w-16 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                    {entry.label}
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {entry.value
+                      .split(',')
+                      .map((t) => t.trim())
+                      .filter(Boolean)
+                      .map((tech) => (
+                        <span
+                          key={tech}
+                          className="rounded bg-ink px-1.5 py-0.5 text-[10px] font-medium text-slate-300"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
         <button
@@ -239,6 +283,26 @@ export default function ProjectDetail() {
             placeholder="Description (optional)"
             className="mb-3 w-full rounded-lg border border-ink-line bg-ink px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none"
           />
+          <p className="mb-1.5 text-xs font-medium text-slate-400">
+            Tech stack (optional)
+          </p>
+          <div className="mb-3 flex flex-col gap-2">
+            {TECH_STACK_FIELDS.map((f) => (
+              <input
+                key={f.key}
+                value={draftTechStack[f.key] ?? ''}
+                onChange={(e) =>
+                  setDraftTechStack((s) => ({ ...s, [f.key]: e.target.value }))
+                }
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') saveProject();
+                  if (e.key === 'Escape') setEditingProject(false);
+                }}
+                placeholder={f.label}
+                className="w-full rounded-lg border border-ink-line bg-ink px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none"
+              />
+            ))}
+          </div>
           <button
             onClick={saveProject}
             disabled={!draftName.trim()}
