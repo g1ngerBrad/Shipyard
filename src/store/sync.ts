@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { Project, Task, TaskType } from '../types';
+import type { Project, Task, TaskType, TechStack } from '../types';
 import { useAuthStore } from './useAuthStore';
 import { useProjectStore } from './useProjectStore';
 
@@ -8,6 +8,7 @@ type ProjectRow = {
   user_id: string;
   name: string;
   description: string | null;
+  tech_stack: TechStack | null;
   created_at: number;
   updated_at: number;
   completed: boolean;
@@ -32,6 +33,7 @@ const projectToRow = (p: Project, userId: string): ProjectRow => ({
   user_id: userId,
   name: p.name,
   description: p.description ?? null,
+  tech_stack: p.techStack ?? null,
   created_at: p.createdAt,
   updated_at: p.updatedAt,
   completed: p.completed,
@@ -42,6 +44,7 @@ const rowToProject = (r: ProjectRow): Project => ({
   id: r.id,
   name: r.name,
   description: r.description ?? undefined,
+  techStack: r.tech_stack ?? undefined,
   createdAt: Number(r.created_at),
   updatedAt: Number(r.updated_at),
   completed: r.completed,

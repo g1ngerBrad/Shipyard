@@ -1,12 +1,23 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Project, ProjectSort, Task, TaskType } from '../types';
+import { TECH_STACK_FIELDS } from '../types';
+import type { Project, ProjectSort, Task, TaskType, TechStack } from '../types';
 
 function uid(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return crypto.randomUUID();
   }
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function cleanTechStack(ts?: TechStack): TechStack | undefined {
+  if (!ts) return undefined;
+  const cleaned: TechStack = {};
+  for (const { key } of TECH_STACK_FIELDS) {
+    const v = ts[key]?.trim();
+    if (v) cleaned[key] = v;
+  }
+  return Object.keys(cleaned).length > 0 ? cleaned : undefined;
 }
 
 interface ProjectState {
@@ -17,10 +28,14 @@ interface ProjectState {
   deletedProjectIds: string[];
   deletedTaskIds: string[];
 
-  addProject: (name: string, description?: string) => string;
+  addProject: (
+    name: string,
+    description?: string,
+    techStack?: TechStack
+  ) => string;
   editProject: (
     projectId: string,
-    updates: { name?: string; description?: string }
+    updates: { name?: string; description?: string; techStack?: TechStack }
   ) => void;
   deleteProject: (projectId: string) => void;
   toggleProjectComplete: (projectId: string) => void;
@@ -57,13 +72,14 @@ export const useProjectStore = create<ProjectState>()(
         deletedProjectIds: [],
         deletedTaskIds: [],
 
-        addProject: (name, description) => {
+        addProject: (name, description, techStack) => {
           const id = uid();
           const now = Date.now();
           const project: Project = {
             id,
             name: name.trim(),
             description: description?.trim() || undefined,
+            techStack: cleanTechStack(techStack),
             createdAt: now,
             updatedAt: now,
             completed: false,
@@ -85,6 +101,9 @@ export const useProjectStore = create<ProjectState>()(
                       }),
                       ...(updates.description !== undefined && {
                         description: updates.description.trim() || undefined,
+                      }),
+                      ...(updates.techStack !== undefined && {
+                        techStack: cleanTechStack(updates.techStack),
                       }),
                       updatedAt: now,
                     }
