@@ -16,8 +16,9 @@ createRoot(document.getElementById('root')!).render(
 
 const splash = document.getElementById('splash')
 if (splash) {
-  requestAnimationFrame(() => {
+  const hideSplash = () => {
     splash.classList.add('is-hidden')
     splash.addEventListener('transitionend', () => splash.remove(), { once: true })
-  })
+  }
+  requestAnimationFrame(() => requestAnimationFrame(hideSplash))
 }

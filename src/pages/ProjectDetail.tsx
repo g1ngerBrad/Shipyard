@@ -113,9 +113,12 @@ export default function ProjectDetail() {
   const done = useMemo(
     () =>
       projectTasks
-        .filter((t) => t.completed)
+        .filter(
+          (t) =>
+            t.completed && (filters.length === 0 || filters.includes(t.type))
+        )
         .sort((a, b) => (b.completedAt ?? 0) - (a.completedAt ?? 0)),
-    [projectTasks]
+    [projectTasks, filters]
   );
 
   if (!project) return <Navigate to="/" replace />;
