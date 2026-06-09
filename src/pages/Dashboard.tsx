@@ -39,6 +39,7 @@ export default function Dashboard() {
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [techStack, setTechStack] = useState<TechStack>({});
+  const [integrations, setIntegrations] = useState('');
   const [pendingDelete, setPendingDelete] = useState<{
     id: string;
     name: string;
@@ -98,10 +99,11 @@ export default function Dashboard() {
   const submit = () => {
     const trimmed = name.trim();
     if (!trimmed) return;
-    const id = addProject(trimmed, desc, techStack);
+    const id = addProject(trimmed, desc, techStack, integrations);
     setName('');
     setDesc('');
     setTechStack({});
+    setIntegrations('');
     setShowForm(false);
     navigate(`/project/${id}`);
   };
@@ -176,6 +178,13 @@ export default function Dashboard() {
               />
             ))}
           </div>
+          <input
+            value={integrations}
+            onChange={(e) => setIntegrations(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && submit()}
+            placeholder="Integrations (optional, comma-separated)"
+            className="mb-3 w-full rounded-lg border border-ink-line bg-ink px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none"
+          />
           <button
             onClick={submit}
             disabled={!name.trim()}

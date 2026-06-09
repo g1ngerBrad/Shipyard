@@ -92,6 +92,7 @@ export default function ProjectDetail() {
   const [draftName, setDraftName] = useState('');
   const [draftDesc, setDraftDesc] = useState('');
   const [draftTechStack, setDraftTechStack] = useState<TechStack>({});
+  const [draftIntegrations, setDraftIntegrations] = useState('');
 
   const projectTasks = useMemo(
     () => tasks.filter((t) => t.projectId === id),
@@ -133,6 +134,7 @@ export default function ProjectDetail() {
     setDraftName(project.name);
     setDraftDesc(project.description ?? '');
     setDraftTechStack(project.techStack ?? {});
+    setDraftIntegrations(project.integrations ?? '');
     setEditingProject(true);
   };
 
@@ -142,6 +144,7 @@ export default function ProjectDetail() {
       name: draftName,
       description: draftDesc,
       techStack: draftTechStack,
+      integrations: draftIntegrations,
     });
     setEditingProject(false);
   };
@@ -193,7 +196,7 @@ export default function ProjectDetail() {
             <div className="mt-1.5 flex flex-col gap-1">
               {techEntries.map((entry) => (
                 <div key={entry.label} className="flex items-center gap-1.5">
-                  <span className="w-16 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                  <span className="w-20 shrink-0 whitespace-nowrap text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                     {entry.label}
                   </span>
                   <div className="flex flex-wrap gap-1">
@@ -212,6 +215,27 @@ export default function ProjectDetail() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+          {project.integrations && (
+            <div className="mt-1.5 flex items-center gap-1.5">
+              <span className="w-20 shrink-0 whitespace-nowrap text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                Integrations
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {project.integrations
+                  .split(',')
+                  .map((t) => t.trim())
+                  .filter(Boolean)
+                  .map((item) => (
+                    <span
+                      key={item}
+                      className="rounded bg-ink px-1.5 py-0.5 text-[10px] font-medium text-slate-300"
+                    >
+                      {item}
+                    </span>
+                  ))}
+              </div>
             </div>
           )}
         </div>
@@ -303,6 +327,16 @@ export default function ProjectDetail() {
               />
             ))}
           </div>
+          <input
+            value={draftIntegrations}
+            onChange={(e) => setDraftIntegrations(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') saveProject();
+              if (e.key === 'Escape') setEditingProject(false);
+            }}
+            placeholder="Integrations (optional, comma-separated)"
+            className="mb-3 w-full rounded-lg border border-ink-line bg-ink px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none"
+          />
           <button
             onClick={saveProject}
             disabled={!draftName.trim()}

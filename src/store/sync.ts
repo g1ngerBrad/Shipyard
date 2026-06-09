@@ -9,6 +9,7 @@ type ProjectRow = {
   name: string;
   description: string | null;
   tech_stack: TechStack | null;
+  integrations: string | null;
   created_at: number;
   updated_at: number;
   completed: boolean;
@@ -34,6 +35,7 @@ const projectToRow = (p: Project, userId: string): ProjectRow => ({
   name: p.name,
   description: p.description ?? null,
   tech_stack: p.techStack ?? null,
+  integrations: p.integrations ?? null,
   created_at: p.createdAt,
   updated_at: p.updatedAt,
   completed: p.completed,
@@ -45,6 +47,7 @@ const rowToProject = (r: ProjectRow): Project => ({
   name: r.name,
   description: r.description ?? undefined,
   techStack: r.tech_stack ?? undefined,
+  integrations: r.integrations ?? undefined,
   createdAt: Number(r.created_at),
   updatedAt: Number(r.updated_at),
   completed: r.completed,
