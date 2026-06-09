@@ -1,7 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronRight, FolderPlus, Plus, Trash2, X } from 'lucide-react';
+import {
+  CheckCircle2,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  FolderPlus,
+  Plus,
+  RotateCcw,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { useProjectStore } from '../store/useProjectStore';
+import { PROJECT_SORTS, type ProjectSort } from '../types';
+import ConfirmDialog from '../components/ConfirmDialog';
+import SortMenu from '../components/SortMenu';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -11,10 +24,18 @@ export default function Dashboard() {
   const tasks = useProjectStore((s) => s.tasks);
   const addProject = useProjectStore((s) => s.addProject);
   const deleteProject = useProjectStore((s) => s.deleteProject);
+  const toggleProjectComplete = useProjectStore((s) => s.toggleProjectComplete);
+  const projectSort = useProjectStore((s) => s.projectSort);
+  const setProjectSort = useProjectStore((s) => s.setProjectSort);
 
+  const [showCompleted, setShowCompleted] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -33,6 +54,40 @@ export default function Dashboard() {
     const own = tasks.filter((t) => t.projectId === projectId);
     return { open: own.filter((t) => !t.completed).length, total: own.length };
   };
+
+  const completedCount = projects.filter((p) => p.completed).length;
+
+  const visibleProjects = useMemo(() => {
+    const openCount = (projectId: string) =>
+      tasks.filter((t) => t.projectId === projectId && !t.completed).length;
+
+    const compare = (
+      a: (typeof projects)[number],
+      b: (typeof projects)[number]
+    ) => {
+      switch (projectSort) {
+        case 'updated':
+          return b.updatedAt - a.updatedAt;
+        case 'created-asc':
+          return a.createdAt - b.createdAt;
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'open-tasks':
+          return openCount(b.id) - openCount(a.id);
+        case 'created-desc':
+        default:
+          return b.createdAt - a.createdAt;
+      }
+    };
+
+    return projects
+      .filter((p) => showCompleted || !p.completed)
+      .sort((a, b) => {
+        // Completed projects always sink to the bottom.
+        if (a.completed !== b.completed) return a.completed ? 1 : -1;
+        return compare(a, b);
+      });
+  }, [projects, tasks, projectSort, showCompleted]);
 
   const submit = () => {
     const trimmed = name.trim();
@@ -105,42 +160,118 @@ export default function Dashboard() {
           <p className="text-xs">Tap “Add” to create your first one.</p>
         </div>
       ) : (
-        <ul className="flex flex-col gap-2">
-          {projects.map((p) => {
-            const { open, total } = counts(p.id);
-            return (
-              <li key={p.id}>
-                <div className="flex items-center gap-2 rounded-xl border border-ink-line bg-ink-soft active:scale-[0.99]">
-                  <button
-                    onClick={() => navigate(`/project/${p.id}`)}
-                    className="flex flex-1 items-center justify-between gap-2 px-3 py-3 text-left"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-100">
-                        {p.name}
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        {open} open · {total} total
-                      </p>
+        <>
+          <div className="mb-3 flex items-center gap-2">
+            <SortMenu<ProjectSort>
+              label="Sort projects"
+              value={projectSort}
+              options={PROJECT_SORTS}
+              onChange={setProjectSort}
+            />
+            {completedCount > 0 && (
+              <button
+                onClick={() => setShowCompleted((v) => !v)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-lg border border-ink-line px-2.5 py-1.5 text-xs font-medium transition-transform active:scale-95 ${
+                  showCompleted
+                    ? 'bg-accent/15 text-accent'
+                    : 'bg-ink-soft text-slate-400'
+                }`}
+                aria-pressed={showCompleted}
+              >
+                {showCompleted ? <Eye size={14} /> : <EyeOff size={14} />}
+                Done ({completedCount})
+              </button>
+            )}
+          </div>
+
+          {visibleProjects.length === 0 ? (
+            <p className="py-8 text-center text-sm text-slate-500">
+              No active projects.
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {visibleProjects.map((p) => {
+                const { open, total } = counts(p.id);
+                return (
+                  <li key={p.id}>
+                    <div
+                      className={`flex items-center gap-1 rounded-xl border border-ink-line bg-ink-soft active:scale-[0.99] ${
+                        p.completed ? 'opacity-60' : ''
+                      }`}
+                    >
+                      <button
+                        onClick={() => navigate(`/project/${p.id}`)}
+                        className="flex flex-1 items-center justify-between gap-2 px-3 py-3 text-left"
+                      >
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <p className="break-words text-sm font-semibold text-slate-100">
+                              {p.name}
+                            </p>
+                            {p.completed && (
+                              <span className="shrink-0 rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold text-accent">
+                                Done
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-400">
+                            {open} open · {total} total
+                          </p>
+                        </div>
+                        <ChevronRight
+                          size={18}
+                          className="shrink-0 text-slate-500"
+                        />
+                      </button>
+                      <button
+                        onClick={() => toggleProjectComplete(p.id)}
+                        aria-label={
+                          p.completed
+                            ? `Reopen ${p.name}`
+                            : `Mark ${p.name} complete`
+                        }
+                        className={`py-3 pl-1 active:scale-90 ${
+                          p.completed ? 'text-accent' : 'text-slate-500'
+                        }`}
+                      >
+                        {p.completed ? (
+                          <RotateCcw size={16} />
+                        ) : (
+                          <CheckCircle2 size={16} />
+                        )}
+                      </button>
+                      <button
+                        onClick={() =>
+                          setPendingDelete({ id: p.id, name: p.name })
+                        }
+                        aria-label={`Delete ${p.name}`}
+                        className="px-3 py-3 text-slate-500 active:scale-90"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
-                    <ChevronRight size={18} className="shrink-0 text-slate-500" />
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (confirm(`Delete “${p.name}” and all its tasks?`))
-                        deleteProject(p.id);
-                    }}
-                    aria-label={`Delete ${p.name}`}
-                    className="px-3 py-3 text-slate-500 active:scale-90"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </>
       )}
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Delete project?"
+        message={
+          pendingDelete
+            ? `“${pendingDelete.name}” and all its tasks will be permanently removed.`
+            : undefined
+        }
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={() => {
+          if (pendingDelete) deleteProject(pendingDelete.id);
+          setPendingDelete(null);
+        }}
+      />
     </div>
   );
 }
