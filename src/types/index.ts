@@ -19,6 +19,7 @@ export interface Task {
   title: string;
   completed: boolean;
   createdAt: number;
+  updatedAt: number;
   completedAt?: number;
   order: number;
 }

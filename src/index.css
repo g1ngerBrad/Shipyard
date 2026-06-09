@@ -1,10 +1,10 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-ink: #0f172a; /* slate-900 — primary surface */
-  --color-ink-soft: #1e293b; /* slate-800 — raised cards */
-  --color-ink-line: #334155; /* slate-700 — hairline borders */
-  --color-accent: #38bdf8; /* sky-400 */
+  --color-ink: #0f172a;
+  --color-ink-soft: #1e293b;
+  --color-ink-line: #334155;
+  --color-accent: #38bdf8;
   --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'SF Pro Text',
     system-ui, sans-serif;
 }
@@ -24,7 +24,7 @@ body {
     radial-gradient(100% 70% at 0% 100%, rgba(244, 114, 208, 0.12), transparent 55%);
   background-attachment: fixed;
   background-repeat: no-repeat;
-  color: #e2e8f0; /* slate-200 */
+  color: #e2e8f0;
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
   text-rendering: optimizeLegibility;

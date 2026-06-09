@@ -14,6 +14,9 @@ interface ProjectState {
   tasks: Task[];
   projectSort: ProjectSort;
 
+  deletedProjectIds: string[];
+  deletedTaskIds: string[];
+
   addProject: (name: string, description?: string) => string;
   editProject: (
     projectId: string,
@@ -31,6 +34,12 @@ interface ProjectState {
 
   getProject: (projectId: string) => Project | undefined;
   getTasks: (projectId: string) => Task[];
+
+  applyCloudSnapshot: (
+    cloudProjects: Project[],
+    cloudTasks: Task[]
+  ) => void;
+  markSynced: () => void;
 }
 
 export const useProjectStore = create<ProjectState>()(
@@ -45,6 +54,8 @@ export const useProjectStore = create<ProjectState>()(
         projects: [],
         tasks: [],
         projectSort: 'created-desc',
+        deletedProjectIds: [],
+        deletedTaskIds: [],
 
         addProject: (name, description) => {
           const id = uid();
@@ -86,6 +97,7 @@ export const useProjectStore = create<ProjectState>()(
           set((s) => ({
             projects: s.projects.filter((p) => p.id !== projectId),
             tasks: s.tasks.filter((t) => t.projectId !== projectId),
+            deletedProjectIds: [...s.deletedProjectIds, projectId],
           })),
 
         toggleProjectComplete: (projectId) =>
@@ -120,6 +132,7 @@ export const useProjectStore = create<ProjectState>()(
               title: title.trim(),
               completed: false,
               createdAt: now,
+              updatedAt: now,
               order: minOrder - 1,
             };
             return {
@@ -140,6 +153,7 @@ export const useProjectStore = create<ProjectState>()(
                       ...t,
                       completed: !t.completed,
                       completedAt: !t.completed ? now : undefined,
+                      updatedAt: now,
                     }
                   : t
               ),
@@ -162,6 +176,7 @@ export const useProjectStore = create<ProjectState>()(
                       ...(updates.title !== undefined && {
                         title: updates.title.trim() || t.title,
                       }),
+                      updatedAt: now,
                     }
                   : t
               ),
@@ -180,6 +195,7 @@ export const useProjectStore = create<ProjectState>()(
               projects: target
                 ? touchProject(s.projects, target.projectId, now)
                 : s.projects,
+              deletedTaskIds: [...s.deletedTaskIds, taskId],
             };
           }),
 
@@ -193,11 +209,14 @@ export const useProjectStore = create<ProjectState>()(
             orderedIds.forEach((id, i) => {
               if (slots[i] !== undefined) newOrder.set(id, slots[i]);
             });
+            const now = Date.now();
             return {
               tasks: s.tasks.map((t) =>
-                newOrder.has(t.id) ? { ...t, order: newOrder.get(t.id)! } : t
+                newOrder.has(t.id)
+                  ? { ...t, order: newOrder.get(t.id)!, updatedAt: now }
+                  : t
               ),
-              projects: touchProject(s.projects, projectId, Date.now()),
+              projects: touchProject(s.projects, projectId, now),
             };
           }),
 
@@ -206,15 +225,46 @@ export const useProjectStore = create<ProjectState>()(
 
         getTasks: (projectId) =>
           get().tasks.filter((t) => t.projectId === projectId),
+
+        applyCloudSnapshot: (cloudProjects, cloudTasks) =>
+          set((s) => {
+            const deletedP = new Set(s.deletedProjectIds);
+            const deletedT = new Set(s.deletedTaskIds);
+
+            const merge = <T extends { id: string; updatedAt: number }>(
+              local: T[],
+              cloud: T[],
+              tombstones: Set<string>
+            ): T[] => {
+              const byId = new Map(local.map((row) => [row.id, row]));
+              for (const remote of cloud) {
+                if (tombstones.has(remote.id)) continue;
+                const existing = byId.get(remote.id);
+                if (!existing || remote.updatedAt >= existing.updatedAt) {
+                  byId.set(remote.id, remote);
+                }
+              }
+              return [...byId.values()];
+            };
+
+            return {
+              projects: merge(s.projects, cloudProjects, deletedP),
+              tasks: merge(s.tasks, cloudTasks, deletedT),
+            };
+          }),
+
+        markSynced: () => set({ deletedProjectIds: [], deletedTaskIds: [] }),
       };
     },
     {
       name: 'project-tracker-v1',
-      version: 2,
+      version: 3,
       partialize: (s) => ({
         projects: s.projects,
         tasks: s.tasks,
         projectSort: s.projectSort,
+        deletedProjectIds: s.deletedProjectIds,
+        deletedTaskIds: s.deletedTaskIds,
       }),
       migrate: (persisted, version) => {
         const state = persisted as Partial<ProjectState> | undefined;
@@ -231,12 +281,17 @@ export const useProjectStore = create<ProjectState>()(
             seen[t.projectId] = idx + 1;
             return { ...t, order: t.order ?? idx };
           });
-          return {
-            ...state,
-            projects,
-            tasks,
-            projectSort: state.projectSort ?? 'created-desc',
-          } as ProjectState;
+          state.projects = projects;
+          state.tasks = tasks;
+          state.projectSort = state.projectSort ?? 'created-desc';
+        }
+        if (version < 3) {
+          state.tasks = (state.tasks ?? []).map((t) => ({
+            ...t,
+            updatedAt: t.updatedAt ?? t.createdAt,
+          }));
+          state.deletedProjectIds = state.deletedProjectIds ?? [];
+          state.deletedTaskIds = state.deletedTaskIds ?? [];
         }
         return state as ProjectState;
       },

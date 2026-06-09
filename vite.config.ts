@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
@@ -35,8 +34,6 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
-        // iOS caches apple-touch-startup-image assets itself at install time, so
-        // there's no need to precache all 46 of them in the service worker.
         globIgnores: ['**/splash/**'],
         navigateFallback: '/index.html',
       },
