@@ -31,11 +31,17 @@ interface ProjectState {
   addProject: (
     name: string,
     description?: string,
-    techStack?: TechStack
+    techStack?: TechStack,
+    integrations?: string
   ) => string;
   editProject: (
     projectId: string,
-    updates: { name?: string; description?: string; techStack?: TechStack }
+    updates: {
+      name?: string;
+      description?: string;
+      techStack?: TechStack;
+      integrations?: string;
+    }
   ) => void;
   deleteProject: (projectId: string) => void;
   toggleProjectComplete: (projectId: string) => void;
@@ -72,7 +78,7 @@ export const useProjectStore = create<ProjectState>()(
         deletedProjectIds: [],
         deletedTaskIds: [],
 
-        addProject: (name, description, techStack) => {
+        addProject: (name, description, techStack, integrations) => {
           const id = uid();
           const now = Date.now();
           const project: Project = {
@@ -80,6 +86,7 @@ export const useProjectStore = create<ProjectState>()(
             name: name.trim(),
             description: description?.trim() || undefined,
             techStack: cleanTechStack(techStack),
+            integrations: integrations?.trim() || undefined,
             createdAt: now,
             updatedAt: now,
             completed: false,
@@ -104,6 +111,9 @@ export const useProjectStore = create<ProjectState>()(
                       }),
                       ...(updates.techStack !== undefined && {
                         techStack: cleanTechStack(updates.techStack),
+                      }),
+                      ...(updates.integrations !== undefined && {
+                        integrations: updates.integrations.trim() || undefined,
                       }),
                       updatedAt: now,
                     }

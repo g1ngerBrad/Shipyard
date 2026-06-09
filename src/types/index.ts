@@ -21,6 +21,7 @@ export interface Project {
   name: string;
   description?: string;
   techStack?: TechStack;
+  integrations?: string;
   createdAt: number;
   updatedAt: number;
   completed: boolean;
