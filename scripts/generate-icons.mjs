@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(root, 'public');
 
-const INK = '#0f172a'; // slate-900 — matches the app background
+const INK = '#0f172a';
 
 const defs = `
   <linearGradient id="g" x1="80" y1="80" x2="432" y2="432" gradientUnits="userSpaceOnUse">
@@ -13,13 +13,11 @@ const defs = `
     <stop offset="0.55" stop-color="#C266E0"/>
     <stop offset="1" stop-color="#F472D0"/>
   </linearGradient>
-  <!-- Purple bloom from the top, echoing the in-app ambient background. -->
   <radialGradient id="bloom" cx="0.5" cy="0.3" r="0.8">
     <stop offset="0" stop-color="#C266E0" stop-opacity="0.42"/>
     <stop offset="0.55" stop-color="#7C3AED" stop-opacity="0.14"/>
     <stop offset="1" stop-color="#C266E0" stop-opacity="0"/>
   </radialGradient>
-  <!-- Faint pink bloom from the bottom-left for balance. -->
   <radialGradient id="bloom2" cx="0.12" cy="0.95" r="0.6">
     <stop offset="0" stop-color="#F472D0" stop-opacity="0.18"/>
     <stop offset="1" stop-color="#F472D0" stop-opacity="0"/>

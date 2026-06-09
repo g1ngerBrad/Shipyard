@@ -8,6 +8,7 @@ import {
   FolderPlus,
   Plus,
   RotateCcw,
+  Settings,
   Trash2,
   X,
 } from 'lucide-react';
@@ -83,7 +84,6 @@ export default function Dashboard() {
     return projects
       .filter((p) => showCompleted || !p.completed)
       .sort((a, b) => {
-        // Completed projects always sink to the bottom.
         if (a.completed !== b.completed) return a.completed ? 1 : -1;
         return compare(a, b);
       });
@@ -105,13 +105,22 @@ export default function Dashboard() {
         <h1 className="text-xl font-bold tracking-tight text-slate-100">
           Projects
         </h1>
-        <button
-          onClick={() => setShowForm((v) => !v)}
-          aria-label="Add project"
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-ink transition-transform active:scale-95"
-        >
-          <Plus size={20} strokeWidth={2.4} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('/settings')}
+            aria-label="Settings"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-line bg-ink-soft text-slate-300 transition-transform active:scale-95"
+          >
+            <Settings size={18} />
+          </button>
+          <button
+            onClick={() => setShowForm((v) => !v)}
+            aria-label="Add project"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-ink transition-transform active:scale-95"
+          >
+            <Plus size={20} strokeWidth={2.4} />
+          </button>
+        </div>
       </header>
 
       {showForm && (

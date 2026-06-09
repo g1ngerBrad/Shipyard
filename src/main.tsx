@@ -2,6 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { initAuth } from './store/useAuthStore'
+import { initSync } from './store/sync'
+
+initSync()
+initAuth()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -9,7 +14,6 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
-// Dismiss the inline splash screen once React has mounted and painted.
 const splash = document.getElementById('splash')
 if (splash) {
   requestAnimationFrame(() => {

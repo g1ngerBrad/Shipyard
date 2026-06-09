@@ -117,10 +117,6 @@ export default function ProjectDetail() {
     if (!trimmed) return;
     addTask(id, newType, trimmed);
     setTitle('');
-    // On WebKit (iOS/macOS) the inline autocorrect suggestion lives in a
-    // separate "marked text" layer. Clearing the value while the input keeps
-    // focus leaves that grey candidate stranded over the placeholder, so blur
-    // to discard it, then refocus next frame to keep rapid entry working.
     const input = inputRef.current;
     input?.blur();
     requestAnimationFrame(() => input?.focus());

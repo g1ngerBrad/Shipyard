@@ -2,9 +2,8 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 
-// Code-split the detail route so its heavy dependency (@dnd-kit) is not part of
-// the initial bundle. It loads on demand when a project is opened.
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 export default function App() {
   return (
@@ -14,6 +13,7 @@ export default function App() {
           <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="/project/:id" element={<ProjectDetail />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
