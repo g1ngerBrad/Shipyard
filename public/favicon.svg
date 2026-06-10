@@ -10,9 +10,19 @@
     </filter>
   </defs>
   <g filter="url(#glow)" stroke="url(#g)" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Open ring with a gap at the top-left -->
-    <path d="M 197.9 96.2 A 170 170 0 1 1 96.2 197.9" stroke-width="40"/>
-    <!-- Checkmark -->
-    <path d="M 162 258 L 228 326 L 356 188" stroke-width="44"/>
+    <!-- Gantry bridge beam (cantilevers past both legs) -->
+    <path d="M 92 128 H 420" stroke-width="42"/>
+    <!-- Two splayed portal legs straddling the load -->
+    <path d="M 160 128 L 116 392" stroke-width="34"/>
+    <path d="M 352 128 L 396 392" stroke-width="34"/>
+    <!-- Flat base footings, dropped to cap the leg ends -->
+    <path d="M 84 400 H 148" stroke-width="30"/>
+    <path d="M 364 400 H 428" stroke-width="30"/>
+    <!-- Hoist trolley on the bridge -->
+    <path d="M 272 150 H 336" stroke-width="22"/>
+    <!-- Cable drops from the trolley straight into the checkmark's tip -->
+    <path d="M 304 150 V 208" stroke-width="16"/>
+    <!-- The load: a natural tick, joined to the cable at its long upper tip -->
+    <path d="M 200 280 L 244 320 L 304 208" stroke-width="42"/>
   </g>
 </svg>

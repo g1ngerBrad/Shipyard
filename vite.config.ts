@@ -12,8 +12,8 @@ export default defineConfig({
       devOptions: { enabled: false },
       includeAssets: ['favicon.svg', 'favicon-96x96.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'TrackLight',
-        short_name: 'TrackLight',
+        name: 'Shipyard',
+        short_name: 'Shipyard',
         description: 'Track projects, ideas, features and changes — offline.',
         theme_color: '#0f172a',
         background_color: '#0f172a',
