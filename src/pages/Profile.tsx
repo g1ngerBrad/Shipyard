@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronLeft,
@@ -10,6 +10,10 @@ import {
 import { isSupabaseConfigured } from '../lib/supabase';
 import { useAuthStore, type SyncStatus } from '../store/useAuthStore';
 import { syncNow } from '../store/sync';
+import { useProjectStore } from '../store/useProjectStore';
+import { computeDashboard } from '../lib/dashboardStats';
+import AttributeSheet from '../components/dashboard/AttributeSheet';
+import Achievements from '../components/dashboard/Achievements';
 
 const SYNC_LABEL: Record<SyncStatus, string> = {
   idle: 'Not synced yet',
@@ -19,7 +23,7 @@ const SYNC_LABEL: Record<SyncStatus, string> = {
   offline: 'Offline — changes saved locally',
 };
 
-export default function Settings() {
+export default function Profile() {
   const navigate = useNavigate();
 
   const user = useAuthStore((s) => s.user);
@@ -30,6 +34,13 @@ export default function Settings() {
   const signIn = useAuthStore((s) => s.signIn);
   const signUp = useAuthStore((s) => s.signUp);
   const signOut = useAuthStore((s) => s.signOut);
+
+  const projects = useProjectStore((s) => s.projects);
+  const tasks = useProjectStore((s) => s.tasks);
+  const data = useMemo(
+    () => computeDashboard(projects, tasks),
+    [projects, tasks]
+  );
 
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
@@ -71,9 +82,14 @@ export default function Settings() {
           <ChevronLeft size={24} />
         </button>
         <h1 className="text-lg font-bold tracking-tight text-slate-100">
-          Settings
+          Profile
         </h1>
       </header>
+
+      <section className="mb-2.5 flex flex-col gap-2.5">
+        <AttributeSheet attributes={data.attributes} />
+        <Achievements metrics={data.metrics} />
+      </section>
 
       <section className="rounded-xl border border-ink-line bg-ink-soft p-4">
         <h2 className="mb-1 flex items-center gap-2 text-sm font-semibold text-slate-100">

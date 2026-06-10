@@ -8,16 +8,12 @@ const pub = join(root, 'public');
 
 const INK = '#0f172a';
 
-// The mark (gradient + glow defs and its paths) is the single source of truth in
-// public/favicon.svg. Pull its inner content in rather than duplicating it here,
-// so this script always renders the current logo.
 const faviconInner = fs
   .readFileSync(join(pub, 'favicon.svg'), 'utf8')
   .replace(/^[\s\S]*?<svg[^>]*>/, '')
   .replace(/<\/svg>\s*$/, '')
   .trim();
 
-// Bloom backdrop layered behind the mark (ids kept distinct from favicon's).
 const bloomDefs = `
   <radialGradient id="bloom" cx="0.5" cy="0.3" r="0.8">
     <stop offset="0" stop-color="#C266E0" stop-opacity="0.42"/>

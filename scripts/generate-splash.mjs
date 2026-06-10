@@ -3,13 +3,6 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-// Regenerates the iOS apple-touch-startup-images in public/splash with the
-// current logo (public/favicon.svg) centred on the app's splash gradient.
-//
-// Needs a Chrome/Edge binary — set PUPPETEER_EXECUTABLE_PATH, e.g.
-//   PUPPETEER_EXECUTABLE_PATH="C:/Program Files/Google/Chrome/Application/chrome.exe" \
-//     node scripts/generate-splash.mjs
-
 const exe = process.env.PUPPETEER_EXECUTABLE_PATH;
 if (!exe) throw new Error('Set PUPPETEER_EXECUTABLE_PATH to a Chrome/Edge binary');
 
@@ -19,7 +12,6 @@ const splashDir = join(root, 'public', 'splash');
 const svg = fs.readFileSync(join(root, 'public', 'favicon.svg'), 'utf8');
 const dataUri = 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
 
-// Splash gradient — kept in sync with the #splash rule in index.html.
 const BG =
   'background-color:#0f172a;' +
   'background-image:' +
@@ -28,7 +20,6 @@ const BG =
   'radial-gradient(100% 70% at 0% 100%, rgba(244,114,208,0.12), transparent 55%);' +
   'background-repeat:no-repeat;';
 
-// Logo sized as a fraction of the shortest side, matching the previous splashes.
 const LOGO_FRACTION = 0.2;
 
 const targets = fs

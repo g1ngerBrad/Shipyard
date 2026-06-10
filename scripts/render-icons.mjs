@@ -7,7 +7,6 @@ if (!exe) throw new Error('Set PUPPETEER_EXECUTABLE_PATH to a Chrome/Edge binary
 const svg = fs.readFileSync('public/favicon.svg', 'utf8');
 const dataUri = 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
 
-// Stylised app background (matches index.html body / splash screen).
 const BG =
   'background-color:#0f172a;' +
   'background-image:' +
@@ -16,9 +15,6 @@ const BG =
   'radial-gradient(100% 70% at 0% 100%, rgba(244,114,208,0.12), transparent 55%);' +
   'background-repeat:no-repeat;';
 
-// All icons: stylised gradient background, mark rendered full-frame (pad 0)
-// so it fills the icon like the original — the SVG viewBox already carries
-// its own breathing room.
 const pad = 0;
 const targets = [
   { file: 'public/favicon-96x96.png', size: 96 },

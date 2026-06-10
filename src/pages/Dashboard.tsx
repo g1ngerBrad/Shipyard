@@ -8,8 +8,8 @@ import {
   FolderPlus,
   Plus,
   RotateCcw,
-  Settings,
   Trash2,
+  User,
   X,
 } from 'lucide-react';
 import { useProjectStore } from '../store/useProjectStore';
@@ -21,6 +21,7 @@ import {
 } from '../types';
 import ConfirmDialog from '../components/ConfirmDialog';
 import SortMenu from '../components/SortMenu';
+import DashboardStats from '../components/dashboard/DashboardStats';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -116,11 +117,11 @@ export default function Dashboard() {
         </h1>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => navigate('/settings')}
-            aria-label="Settings"
+            onClick={() => navigate('/profile')}
+            aria-label="Profile"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-line bg-ink-soft text-slate-300 transition-transform active:scale-95"
           >
-            <Settings size={18} />
+            <User size={18} />
           </button>
           <button
             onClick={() => setShowForm((v) => !v)}
@@ -202,7 +203,7 @@ export default function Dashboard() {
           <p className="text-xs">Tap “Add” to create your first one.</p>
         </div>
       ) : (
-        <>
+        <DashboardStats>
           <div className="mb-3 flex items-center gap-2">
             <SortMenu<ProjectSort>
               label="Sort projects"
@@ -297,7 +298,7 @@ export default function Dashboard() {
               })}
             </ul>
           )}
-        </>
+        </DashboardStats>
       )}
 
       <ConfirmDialog
