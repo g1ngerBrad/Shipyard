@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')!).render(
 
 const splash = document.getElementById('splash')
 if (splash) {
-  const HOLD_MS = 700
+  const HOLD_MS = 1000
 
   const hideSplash = () => {
     splash.classList.add('is-hidden')

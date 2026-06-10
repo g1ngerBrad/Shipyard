@@ -23,11 +23,6 @@ body {
 
 html {
   background-color: var(--color-ink);
-  background-image:
-    radial-gradient(125% 80% at 50% -12%, rgba(194, 102, 224, 0.2), transparent 60%),
-    radial-gradient(90% 60% at 100% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
-    radial-gradient(100% 70% at 0% 100%, rgba(244, 114, 208, 0.12), transparent 55%);
-  background-repeat: no-repeat;
 }
 
 body {
@@ -37,6 +32,24 @@ body {
   -webkit-tap-highlight-color: transparent;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Gradient on a fixed inset:0 layer. With viewport-fit=cover this covers the
+   ENTIRE screen including the status-bar and home-indicator safe areas — the
+   same technique #splash uses. An element background (html/body) instead gets
+   positioned within the safe viewport and fills the safe-area strips with the
+   flat background-color, which is the navy band. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--color-ink);
+  background-image:
+    radial-gradient(125% 80% at 50% -12%, rgba(194, 102, 224, 0.2), transparent 60%),
+    radial-gradient(90% 60% at 100% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
+    radial-gradient(100% 70% at 0% 100%, rgba(244, 114, 208, 0.12), transparent 55%);
+  background-repeat: no-repeat;
 }
 
 #root {
