@@ -22,7 +22,9 @@ body {
 }
 
 html {
-  background-color: var(--color-ink);
+  /* DIAGNOSTIC: green to reveal whether the bottom strip is the html
+     background (inside the web view) or the native/manifest background. */
+  background-color: #00ff00;
 }
 
 body {
