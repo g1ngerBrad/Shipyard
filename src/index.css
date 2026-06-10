@@ -23,6 +23,15 @@ body {
 
 html {
   background-color: var(--color-ink);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--color-ink);
   background-image:
     radial-gradient(125% 80% at 50% -12%, rgba(194, 102, 224, 0.2), transparent 60%),
     radial-gradient(90% 60% at 100% 0%, rgba(56, 189, 248, 0.12), transparent 55%),

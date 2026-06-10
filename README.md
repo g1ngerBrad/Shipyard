@@ -1,73 +1,73 @@
-# React + TypeScript + Vite
+# Shipyard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An offline-first, installable PWA for tracking side projects — and the ideas,
+features, changes, bugs, and tweaks that pile up around them. It's mobile-first,
+works fully offline, and syncs across your devices when connected to Supabase.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Projects & tasks** — group work into projects, each with a description, tech
+  stack, and integrations. Add tasks typed as Idea, Feature, Change, Bug, or
+  Tweak.
+- **Offline-first** — everything is stored locally and works with no network. The
+  cloud is a sync target, not a requirement.
+- **Cross-device sync** — sign in with Supabase to sync projects and tasks across
+  devices, with last-write-wins merging and tombstones so deletes stick.
+- **Installable PWA** — add to your home screen for an app-like, standalone
+  experience with a custom splash screen.
+- **Drag-to-reorder** tasks, sort/filter projects, and mark items complete.
 
-## React Compiler
+## Tech stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+React 19 · TypeScript · Vite · Tailwind CSS v4 · Zustand · Supabase ·
+react-router-dom · @dnd-kit · vite-plugin-pwa
 
-## Expanding the ESLint configuration
+## Getting started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The app runs in **local-only** mode out of the box — no configuration needed.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Enabling cloud sync (optional)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Copy the example env file and add your Supabase project credentials:
+
+```bash
+cp .env.example .env
 ```
+
+```
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-public-key
+```
+
+Use only the **anon/public** key — never a service-role key or other secret. The
+app expects two tables, `tl_projects` and `tl_tasks`, scoped per user via
+`user_id`. Without these env vars the app still works fully, just without sync.
+
+## Scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the Vite dev server with HMR |
+| `npm run build` | Type-check and build for production |
+| `npm run preview` | Preview the production build locally |
+| `npm run typecheck` | Run TypeScript with no emit |
+| `npm run lint` | Lint the project with ESLint |
+
+## Project structure
+
+```
+src/
+  pages/        Dashboard, ProjectDetail, Settings
+  components/   Shared UI (ConfirmDialog, SortMenu)
+  store/        Zustand stores + sync engine
+  lib/          Supabase client
+  types/        Shared data model and constants
+```
+
+See [CLAUDE.md](CLAUDE.md) for a deeper architecture overview and contributor
+conventions.
