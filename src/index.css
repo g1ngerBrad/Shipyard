@@ -22,9 +22,7 @@ body {
 }
 
 html {
-  /* DIAGNOSTIC: green to reveal whether the bottom strip is the html
-     background (inside the web view) or the native/manifest background. */
-  background-color: #00ff00;
+  background-color: var(--color-ink);
 }
 
 body {
@@ -36,15 +34,19 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Full-screen gradient layer. `inset: 0` covers the top safe area (the
-   black-translucent status bar overlays content at y=0), but its bottom edge
-   stops at the home-indicator boundary, leaving a navy strip. Extend the bottom
-   past the inset so the layer reaches the physical bottom of the screen. */
+/* Full-screen gradient layer. Anchored at the top (the black-translucent status
+   bar overlays content at y=0) and sized with 100vh, which on iOS standalone is
+   the full physical screen — overshooting the shorter fixed-positioning box so
+   it covers the home-indicator area. env(safe-area-inset-bottom) reads 0 in
+   standalone, so the bottom inset can't be used to reach it. */
 body::before {
   content: '';
   position: fixed;
-  inset: 0;
-  bottom: calc(-1 * env(safe-area-inset-bottom));
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  height: 100lvh;
   z-index: -1;
   background-color: var(--color-ink);
   background-image:
