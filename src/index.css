@@ -34,12 +34,22 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Full-screen gradient layer. `inset: 0` covers the top safe area (the
+   black-translucent status bar overlays content at y=0), but its bottom edge
+   stops at the home-indicator boundary, leaving a navy strip. Extend the bottom
+   past the inset so the layer reaches the physical bottom of the screen. */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
+  bottom: calc(-1 * env(safe-area-inset-bottom));
   z-index: -1;
-  background-color: #ff0000;
+  background-color: var(--color-ink);
+  background-image:
+    radial-gradient(125% 80% at 50% -12%, rgba(194, 102, 224, 0.2), transparent 60%),
+    radial-gradient(90% 60% at 100% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
+    radial-gradient(100% 70% at 0% 100%, rgba(244, 114, 208, 0.12), transparent 55%);
+  background-repeat: no-repeat;
 }
 
 #root {
