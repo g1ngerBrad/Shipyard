@@ -113,7 +113,7 @@ export default function Dashboard() {
     <div>
       <header className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-bold tracking-tight text-slate-100">
-          Projects
+          Projectss
         </h1>
         <div className="flex items-center gap-2">
           <button
