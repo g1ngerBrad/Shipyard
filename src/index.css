@@ -34,25 +34,23 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Full-screen gradient layer. Anchored at the top (the black-translucent status
-   bar overlays content at y=0) and sized with 100vh, which on iOS standalone is
-   the full physical screen — overshooting the shorter fixed-positioning box so
-   it covers the home-indicator area. env(safe-area-inset-bottom) reads 0 in
-   standalone, so the bottom inset can't be used to reach it. */
+/* Fixed gradient layer (Grounded's approach). The home-indicator safe-area
+   strip can only show the solid base color (var(--color-ink)) — a fixed layer
+   never paints into it. So instead of fighting that, keep the design's bottom
+   edge ON that same base color: the bottom glow is centered and pushed off the
+   bottom of the screen (50% 108%), so its on-screen edge fades to the base and
+   meets the strip seamlessly. (Was at 0% 100% — a corner blob that tinted the
+   exact edge meeting the strip, which read as the band.) */
 body::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100vh;
-  height: 100lvh;
+  inset: 0;
   z-index: -1;
   background-color: var(--color-ink);
   background-image:
     radial-gradient(125% 80% at 50% -12%, rgba(194, 102, 224, 0.2), transparent 60%),
     radial-gradient(90% 60% at 100% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
-    radial-gradient(100% 70% at 0% 100%, rgba(244, 114, 208, 0.12), transparent 55%);
+    radial-gradient(120% 70% at 50% 108%, rgba(244, 114, 208, 0.12), transparent 60%);
   background-repeat: no-repeat;
 }
 

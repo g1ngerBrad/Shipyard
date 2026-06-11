@@ -36,26 +36,18 @@
       body::before {
         content: "";
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 100vh;
-        height: 100lvh;
+        inset: 0;
         z-index: -1;
         background-color: #0f172a;
         background-image:
           radial-gradient(125% 80% at 50% -12%, rgba(194, 102, 224, 0.2), transparent 60%),
           radial-gradient(90% 60% at 100% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
-          radial-gradient(100% 70% at 0% 100%, rgba(244, 114, 208, 0.12), transparent 55%);
+          radial-gradient(120% 70% at 50% 108%, rgba(244, 114, 208, 0.12), transparent 60%);
         background-repeat: no-repeat;
       }
       #splash {
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 100vh;
-        height: 100lvh;
+        inset: 0;
         z-index: 9999;
         display: flex;
         flex-direction: column;
@@ -67,7 +59,7 @@
         background-image:
           radial-gradient(125% 80% at 50% -12%, rgba(194, 102, 224, 0.2), transparent 60%),
           radial-gradient(90% 60% at 100% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
-          radial-gradient(100% 70% at 0% 100%, rgba(244, 114, 208, 0.12), transparent 55%);
+          radial-gradient(120% 70% at 50% 108%, rgba(244, 114, 208, 0.12), transparent 60%);
         background-repeat: no-repeat;
       }
       #splash.is-hidden {
